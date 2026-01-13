@@ -391,31 +391,23 @@ class MenuPrincipal:
             
             # A) POR NOMBRE O ALIAS (Prioridad Alta)
             # Recorremos todas las canciones visibles
-            for cancion in self.biblio.canciones_visibles:
-                # 1. Chequear Título exacto
-                titulo_norm = normalizar_texto(cancion["titulo"])
-                if titulo_norm in texto_norm:
-                    print(f"🎵 Detectado por Título: {cancion['titulo']}")
-                    self.configurar_preview(cancion)
-                    return
-
-                # 2. Chequear Alias (NUEVO)
-                if "alias" in cancion:
-                    for alias in cancion["alias"]:
-                        alias_limpio = normalizar_texto(alias)
-                        if alias_limpio in texto_norm:
-                            print(f"🎵 Detectado por Alias '{alias}': {cancion['titulo']}")
-                            self.configurar_preview(cancion)
-                            return
-
-            # B) POR NÚMERO DE LISTA ("Pon la uno", "Seleccionar la dos")
-            mapa_numeros = {"uno": 0, "una": 0, "dos": 1, "tres": 2, "cuatro": 3, "cinco": 4, "primera": 0, "segunda": 1}
-            
-            for palabra, indice in mapa_numeros.items():
-                if palabra in texto_norm:
-                    if indice < len(self.biblio.canciones_visibles):
-                        self.configurar_preview(self.biblio.canciones_visibles[indice])
+            if "seleccionar" in texto_norm or "pon" in texto_norm:
+                for cancion in self.biblio.canciones_visibles:
+                    # 1. Chequear Título exacto
+                    titulo_norm = normalizar_texto(cancion["titulo"])
+                    if titulo_norm in texto_norm:
+                        print(f"🎵 Detectado por Título: {cancion['titulo']}")
+                        self.configurar_preview(cancion)
                         return
+
+                    # 2. Chequear Alias (NUEVO)
+                    if "alias" in cancion:
+                        for alias in cancion["alias"]:
+                            alias_limpio = normalizar_texto(alias)
+                            if alias_limpio in texto_norm:
+                                print(f"🎵 Detectado por Alias '{alias}': {cancion['titulo']}")
+                                self.configurar_preview(cancion)
+                                return
             
             # Si cambiaron filtros o algo, refrescamos
             self.crear_interfaz_canciones()
