@@ -94,7 +94,7 @@ ai-dance-revolution/
 
 ### Prerrequisitos
 
-* **Sistema Operativo:** Windows.
+* **Sistema Operativo:** Windows,Linux o Mac.
 * **Python:** Versión 3.10 o superior.
 * **Hardware:** Webcam y Micrófono funcionales.
 * **Software Externo:** FFmpeg (necesario para el procesamiento de audio de MoviePy).
@@ -112,7 +112,10 @@ cd Just-Dance-yolo
 2. **Crear un entorno virtual (Recomendado):**
 ```bash
 python -m venv venv
+# En Windows:
 venv\Scripts\activate
+# En Mac/Linux:
+source venv/bin/activate
 
 ```
 
