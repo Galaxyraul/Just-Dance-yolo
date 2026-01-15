@@ -306,6 +306,29 @@ class MenuPrincipal:
                 if event.type == pygame.QUIT: sys.exit()
             self.clock.tick(30)
 
+    def dibujar_caja_ayuda(self, x, y, w, h, titulo, lineas, color_borde):
+        """Dibuja un recuadro con título y lista de textos"""
+        # 1. Fondo semitransparente
+        s = pygame.Surface((w, h))
+        s.set_alpha(50)
+        s.fill(color_borde)
+        self.screen.blit(s, (x, y))
+        
+        # 2. Borde Neón
+        pygame.draw.rect(self.screen, color_borde, (x, y, w, h), 2)
+        
+        # 3. Título de la Sección
+        tit = self.font_mid.render(titulo, True, color_borde)
+        self.screen.blit(tit, (x + 20, y + 15))
+        pygame.draw.line(self.screen, color_borde, (x+20, y+45), (x+w-20, y+45), 1)
+        
+        # 4. Líneas de texto
+        font_info = pygame.font.SysFont("Arial", 20)
+        start_text_y = y + 60
+        for i, linea in enumerate(lineas):
+            txt = font_info.render(f"• {linea}", True, (220, 220, 220))
+            self.screen.blit(txt, (x + 25, start_text_y + (i * 30)))
+            
     def mostrar_podio(self, puntuaciones):
         resultados = []
         for i, pts in enumerate(puntuaciones):
@@ -318,13 +341,13 @@ class MenuPrincipal:
         
         while esperando:
             self.screen.fill((20, 20, 40))
-            tit = font_title.render("🏆 RESULTADOS 🏆", True, NEON_AMARILLO)
+            tit = font_title.render("¡ RESULTADOS !", True, NEON_AMARILLO)
             self.screen.blit(tit, (ANCHO//2 - tit.get_width()//2, 50))
             
             start_y = 180
             for i, (nombre, pts) in enumerate(resultados):
                 color = NEON_VERDE if i == 0 else (200, 200, 200)
-                prefix = "🥇" if i == 0 else (f"{i+1}." )
+                prefix = f"{i+1}." 
                 txt = f"{prefix} {nombre}:  {pts} pts"
                 surf = font_list.render(txt, True, color)
                 self.screen.blit(surf, (ANCHO//2 - surf.get_width()//2, start_y + i*60))
@@ -499,13 +522,64 @@ class MenuPrincipal:
             y_header = int(ALTO * 0.05)
             
             if self.estado == "AYUDA":
-                tit = self.font_big.render("INSTRUCCIONES", True, NEON_AMARILLO)
-                self.screen.blit(tit, ((ANCHO//2) - (tit.get_width()//2), y_header))
-                textos = ["1. Ponte frente a la cámara...", "2. Sigue el esqueleto rosa...", "3. MODO BATALLA: Turnos."]
-                start_y = int(ALTO * 0.2)
-                for i, l in enumerate(textos):
-                    self.screen.blit(self.font_mid.render(l, True, BLANCO), (100, start_y + i*50))
-                for btn in self.botones: btn.dibujar(self.screen, self.font_mid)
+                tit = self.font_big.render("GUÍA DE JUEGO", True, NEON_AMARILLO)
+                self.screen.blit(tit, ((ANCHO//2) - (tit.get_width()//2), int(ALTO * 0.05)))
+                
+                # Definir dimensiones de las cajas
+                box_y = int(ALTO * 0.18)
+                box_h = int(ALTO * 0.65)
+                box_w = int(ANCHO * 0.28) # 3 cajas ocupan ~84% del ancho
+                gap = int(ANCHO * 0.03)
+                
+                start_x = (ANCHO - (box_w * 3 + gap * 2)) // 2
+                
+                # --- CAJA 1: PREPARACIÓN (Verde) ---
+                self.dibujar_caja_ayuda(
+                    start_x, box_y, box_w, box_h, 
+                    "📷 1. PREPARACIÓN",
+                    [
+                        "Colócate a 2-3 metros de la cámara.",
+                        "Asegúrate de que se te vea entero.",
+                        "Evita ropa muy holgada.",
+                        "Iluminación frontal (no contraluz).",
+                        "Despeja el área de muebles."
+                    ],
+                    NEON_VERDE
+                )
+
+                # --- CAJA 2: CÓMO JUGAR (Rosa) ---
+                self.dibujar_caja_ayuda(
+                    start_x + box_w + gap, box_y, box_w, box_h, 
+                    "💃 2. MECÁNICA",
+                    [
+                        "Imita al bailarín como un ESPEJO.",
+                        "Esqueleto ROSA: Movimiento ideal.",
+                        "Esqueleto VERDE: Tu posición.",
+                        "MODO FIESTA: Todos bailan a la vez.",
+                        "MODO BATALLA: Turnos 1vs1.",
+                        "¡Consigue puntos por precisión!"
+                    ],
+                    NEON_ROSA
+                )
+
+                # --- CAJA 3: COMANDOS DE VOZ (Azul) ---
+                self.dibujar_caja_ayuda(
+                    start_x + (box_w + gap) * 2, box_y, box_w, box_h, 
+                    "🎤 3. COMANDOS DE VOZ",
+                    [
+                        "NAVEGACIÓN: 'Menú', 'Volver', 'Salir'.",
+                        "SELECCIÓN: 'Pon Rasputin', 'La uno'.",
+                        "JUEGO: 'Pausa', 'Continuar'.",
+                        "BATALLA: 'Siguiente' (Saltar turno).",
+                        "BUSCAR: 'Buscar Rock', 'Reiniciar'.",
+                        "CONFIRMAR: 'Empezar', 'Dale'."
+                    ],
+                    NEON_AZUL
+                )
+                
+                # Renderizar botón volver
+                for btn in self.botones: 
+                    btn.dibujar(self.screen, self.font_mid)
             
             else:
                 y_content = int(ALTO * 0.15)
